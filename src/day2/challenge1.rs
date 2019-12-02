@@ -33,19 +33,15 @@ pub fn execute_code(program: &mut Vec<usize>) {
     for i in (0..program.len()).step_by(4) {
         match program[i] {
             1 => {
-                let src1 = program[i + 1];
-                let src2 = program[i + 2];
                 let dst = program[i + 3];
-                program[dst] = program[src1] + program[src2];
+                program[dst] = program[program[i + 1]] + program[program[i + 2]];
             }
             2 => {
-                let src1 = program[i + 1];
-                let src2 = program[i + 2];
                 let dst = program[i + 3];
-                program[dst] = program[src1] * program[src2];
+                program[dst] = program[program[i + 1]] * program[program[i + 2]];
             }
             99 => break,
-            _ => panic!("Shouldn't happen"),
+            _ => unimplemented!(),
         }
     }
 }
