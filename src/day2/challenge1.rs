@@ -1,49 +1,123 @@
-pub fn program_to_vecusize(input: &str) -> Vec<usize> {
-    input
-        .split_terminator(',')
-        .map(|i| i.parse())
-        .filter_map(Result::ok)
-        .collect()
+use std::collections::HashMap;
+
+type Instruction = dyn Fn(&mut CPU, usize) -> usize;
+
+pub struct CPU<'c> {
+    program: Vec<usize>,
+    original_program: Vec<usize>,
+    instructions: HashMap<usize, &'c Instruction>,
+    stopped: bool,
 }
 
-fn execute_1202(input: &str) -> usize {
-    let mut program = program_to_vecusize(input);
-
-    program[1] = 12;
-    program[2] = 2;
-
-    execute_code(&mut program);
-
-    program[0]
-}
-
-fn execute_normal(input: &str) -> String {
-    let mut program = program_to_vecusize(input);
-
-    execute_code(&mut program);
-
-    program
-        .iter()
-        .map(|i| i.to_string())
-        .collect::<Vec<String>>()
-        .join(",")
-}
-
-pub fn execute_code(program: &mut Vec<usize>) {
-    for i in (0..program.len()).step_by(4) {
-        match program[i] {
-            1 => {
-                let dst = program[i + 3];
-                program[dst] = program[program[i + 1]] + program[program[i + 2]];
-            }
-            2 => {
-                let dst = program[i + 3];
-                program[dst] = program[program[i + 1]] * program[program[i + 2]];
-            }
-            99 => break,
-            _ => unimplemented!(),
+impl<'c> CPU<'c> {
+    pub fn new(program: Vec<usize>) -> Self {
+        Self {
+            original_program: program.to_vec(),
+            program,
+            instructions: HashMap::new(),
+            stopped: false,
         }
     }
+
+    pub fn reset(&mut self) {
+        self.program = self.original_program.to_vec();
+        self.stopped = false;
+    }
+
+    /// Create cpu from string of integers
+    pub fn from(program: &str) -> Self {
+        Self::new(
+            program
+                .split_terminator(',')
+                .map(|i| i.parse())
+                .filter_map(Result::ok)
+                .collect(),
+        )
+    }
+
+    pub fn program_to_string(&self) -> String {
+        self.program
+            .iter()
+            .map(|i| i.to_string())
+            .collect::<Vec<String>>()
+            .join(",")
+    }
+
+    pub fn get_program(self) -> Vec<usize> {
+        self.program
+    }
+
+    pub fn add_instruction(&mut self, opcode: usize, instruction: &'c Instruction) {
+        self.instructions.insert(opcode, instruction);
+    }
+
+    pub fn set_program_byte(&mut self, index: usize, value: usize) {
+        self.program[index] = value;
+    }
+
+    pub fn get_program_byte(&self, index: usize) -> usize {
+        self.program[index]
+    }
+
+    pub fn run(&mut self) {
+        let mut pc = 0;
+        while !self.stopped {
+            let opcode = self.program[pc];
+            let instruction = match self.instructions.get(&opcode) {
+                Some(i) => *i,
+                None => continue,
+            };
+
+            let length = instruction(self, pc);
+            pc += length;
+        }
+    }
+
+    pub fn stop(&mut self) {
+        self.stopped = true;
+    }
+}
+
+pub fn mul(cpu: &mut CPU, pc: usize) -> usize {
+    let dst = cpu.program[pc + 3];
+    cpu.program[dst] = cpu.program[cpu.program[pc + 1]] * cpu.program[cpu.program[pc + 2]];
+    4
+}
+
+pub fn add(cpu: &mut CPU, pc: usize) -> usize {
+    let dst = cpu.program[pc + 3];
+    cpu.program[dst] = cpu.program[cpu.program[pc + 1]] + cpu.program[cpu.program[pc + 2]];
+    4
+}
+
+pub fn stop(cpu: &mut CPU, _pc: usize) -> usize {
+    cpu.stop();
+    1
+}
+
+fn execute_1202(program: &str) -> usize {
+    let mut cpu = CPU::from(program);
+    cpu.add_instruction(1, &add);
+    cpu.add_instruction(2, &mul);
+    cpu.add_instruction(99, &stop);
+
+    cpu.set_program_byte(1, 12);
+    cpu.set_program_byte(2, 2);
+
+    cpu.run();
+
+    cpu.get_program_byte(0)
+}
+
+fn execute_normal(program: &str) -> String {
+    let mut cpu = CPU::from(program);
+    cpu.add_instruction(1, &add);
+    cpu.add_instruction(2, &mul);
+    cpu.add_instruction(99, &stop);
+
+    cpu.run();
+
+    cpu.program_to_string()
 }
 
 #[cfg(test)]
@@ -55,7 +129,7 @@ mod test {
         let input = include_str!("input");
         let result = execute_1202(input);
         assert_eq!(result, 3306701);
-        println!("challenge 2`.2: {}", result);
+        println!("challenge 2.1: {}", result);
     }
 
     #[test]

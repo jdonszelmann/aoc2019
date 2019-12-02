@@ -1,15 +1,19 @@
-use crate::day2::challenge1::{execute_code, program_to_vecusize};
+use crate::day2::challenge1::{add, mul, stop, CPU};
 
-fn find_inputs(input: &str, value: usize, max: usize) -> Option<(usize, usize)> {
-    let program = program_to_vecusize(input);
+fn find_inputs(program: &str, value: usize, max: usize) -> Option<(usize, usize)> {
+    let mut cpu = CPU::from(program);
+    cpu.add_instruction(1, &add);
+    cpu.add_instruction(2, &mul);
+    cpu.add_instruction(99, &stop);
 
     for i in 1..max {
         for j in 1..max {
-            let mut new_program = program.clone();
-            new_program[1] = i;
-            new_program[2] = j;
-            execute_code(&mut new_program);
-            if new_program[0] == value {
+            cpu.reset();
+            cpu.set_program_byte(1, i);
+            cpu.set_program_byte(2, j);
+
+            cpu.run();
+            if cpu.get_program_byte(0) == value {
                 return Some((i, j));
             }
         }
@@ -27,6 +31,6 @@ mod test {
         let input = include_str!("input");
         let inputs = find_inputs(input, 19690720, 100).unwrap();
         assert_eq!(inputs, (76, 21));
-        println!("challenge 2.1: {}", 100 * inputs.0 + inputs.1)
+        println!("challenge 2.2: {}", 100 * inputs.0 + inputs.1)
     }
 }
