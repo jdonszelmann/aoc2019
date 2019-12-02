@@ -1,10 +1,10 @@
-use crate::day2::challenge1::{add, mul, stop, CPU};
+use crate::day2::challenge1::{ADD, CPU, MUL, STOP};
 
 fn find_inputs(program: &str, value: usize, max: usize) -> Option<(usize, usize)> {
     let mut cpu = CPU::from(program);
-    cpu.add_instruction(1, &add);
-    cpu.add_instruction(2, &mul);
-    cpu.add_instruction(99, &stop);
+    cpu.add_instruction(1, ADD);
+    cpu.add_instruction(2, MUL);
+    cpu.add_instruction(99, STOP);
 
     for i in 1..max {
         for j in 1..max {

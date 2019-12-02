@@ -65,7 +65,7 @@ impl<'c> CPU<'c> {
             let opcode = self.program[pc];
             let instruction = match self.instructions.get(&opcode) {
                 Some(i) => *i,
-                None => continue,
+                None => {pc+= 1; continue;},
             };
 
             let length = instruction(self, pc);
@@ -78,28 +78,28 @@ impl<'c> CPU<'c> {
     }
 }
 
-pub fn mul(cpu: &mut CPU, pc: usize) -> usize {
+pub const MUL: &Instruction = &|cpu, pc| {
     let dst = cpu.program[pc + 3];
     cpu.program[dst] = cpu.program[cpu.program[pc + 1]] * cpu.program[cpu.program[pc + 2]];
     4
-}
+};
 
-pub fn add(cpu: &mut CPU, pc: usize) -> usize {
+pub const ADD: &Instruction = &|cpu, pc| {
     let dst = cpu.program[pc + 3];
     cpu.program[dst] = cpu.program[cpu.program[pc + 1]] + cpu.program[cpu.program[pc + 2]];
     4
-}
+};
 
-pub fn stop(cpu: &mut CPU, _pc: usize) -> usize {
+pub const STOP: &Instruction = &|cpu, _pc| {
     cpu.stop();
     1
-}
+};
 
 fn execute_1202(program: &str) -> usize {
     let mut cpu = CPU::from(program);
-    cpu.add_instruction(1, &add);
-    cpu.add_instruction(2, &mul);
-    cpu.add_instruction(99, &stop);
+    cpu.add_instruction(1, ADD);
+    cpu.add_instruction(2, MUL);
+    cpu.add_instruction(99, STOP);
 
     cpu.set_program_byte(1, 12);
     cpu.set_program_byte(2, 2);
@@ -111,9 +111,9 @@ fn execute_1202(program: &str) -> usize {
 
 fn execute_normal(program: &str) -> String {
     let mut cpu = CPU::from(program);
-    cpu.add_instruction(1, &add);
-    cpu.add_instruction(2, &mul);
-    cpu.add_instruction(99, &stop);
+    cpu.add_instruction(1, ADD);
+    cpu.add_instruction(2, MUL);
+    cpu.add_instruction(99, STOP);
 
     cpu.run();
 
