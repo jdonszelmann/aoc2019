@@ -1,36 +1,85 @@
-use crate::day2::challenge2::{program_to_vecusize, execute_code};
 
-fn find_inputs(input: &str, value: usize, max: usize) -> Option<(usize, usize)>{
-    let program = program_to_vecusize(input);
-
-    for i in 1..max {
-        for j in 1..max {
-            let mut new_program = program.clone();
-            new_program[1] = i;
-            new_program[2] = j;
-            execute_code(&mut new_program);
-            if new_program[0] == value {
-                return Some((i, j));
-            }
-        }
-    }
-
-    None
+pub fn program_to_vecusize(input: &str) -> Vec<usize> {
+    input
+        .split_terminator(',')
+        .map(|i| i.parse())
+        .filter_map(Result::ok)
+        .collect()
 }
 
+fn execute_1202(input: &str) -> usize {
+    let mut program = program_to_vecusize(input);
 
+    program[1] = 12;
+    program[2] = 2;
+
+    execute_code(&mut program);
+
+    program[0]
+}
+
+fn execute_normal(input: &str) -> String {
+    let mut program = program_to_vecusize(input);
+
+    execute_code(&mut program);
+
+    program
+        .iter()
+        .map(|i| i.to_string())
+        .collect::<Vec<String>>()
+        .join(",")
+}
+
+pub fn execute_code(program: &mut Vec<usize>) {
+    for i in (0..program.len()).step_by(4) {
+        match program[i] {
+            1 => {
+                let src1 = program[i + 1];
+                let src2 = program[i + 2];
+                let dst = program[i + 3];
+                program[dst] = program[src1] + program[src2];
+            }
+            2 => {
+                let src1 = program[i + 1];
+                let src2 = program[i + 2];
+                let dst = program[i + 3];
+                program[dst] = program[src1] * program[src2];
+            }
+            99 => break,
+            _ => panic!("Shouldn't happen"),
+        }
+    }
+}
 
 #[cfg(test)]
 mod test {
-    use crate::day2::challenge1::find_inputs;
+    use crate::day2::challenge1::{execute_1202, execute_normal};
 
     #[test]
     fn test_main_real() {
         let input = include_str!("input");
-        let inputs = find_inputs(input, 19690720, 100).unwrap();
-        assert_eq!(inputs, (76, 21));
-        println!("challenge 2.1: {}", 100 * inputs.0 + inputs.1)
+        let result = execute_1202(input);
+        assert_eq!(result, 3306701);
+        println!("challenge 2`.2: {}", result);
+    }
+
+    #[test]
+    fn test_main_1() {
+        assert_eq!(execute_normal("1,0,0,0,99"), "2,0,0,0,99");
+    }
+
+    #[test]
+    fn test_main_2() {
+        assert_eq!(execute_normal("2,3,0,3,99"), "2,3,0,6,99");
+    }
+
+    #[test]
+    fn test_main_3() {
+        assert_eq!(execute_normal("2,4,4,5,99,0"), "2,4,4,5,99,9801");
+    }
+
+    #[test]
+    fn test_main_4() {
+        assert_eq!(execute_normal("1,1,1,4,99,5,6,0,99"), "30,1,1,4,2,5,6,0,99");
     }
 }
-
-

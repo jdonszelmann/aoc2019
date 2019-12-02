@@ -1,9 +1,8 @@
-
 pub fn calculate_fuel(input: i64) -> i64 {
     (input / 3) - 2
 }
 
-pub fn calculate_fuel_str(input: &str) -> i64{
+pub fn calculate_fuel_str(input: &str) -> i64 {
     let mut fuel_counter_upper: i64 = 0;
 
     for i in input.split_ascii_whitespace() {
@@ -17,7 +16,6 @@ pub fn calculate_fuel_str(input: &str) -> i64{
 
     fuel_counter_upper
 }
-
 
 #[cfg(test)]
 mod test {

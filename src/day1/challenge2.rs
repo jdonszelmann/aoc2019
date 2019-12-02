@@ -1,6 +1,6 @@
 use crate::day1::challenge1::calculate_fuel;
 
-pub fn calculate_total_fuel(input: i64) -> i64{
+pub fn calculate_total_fuel(input: i64) -> i64 {
     let mut last = calculate_fuel(input);
     if last <= 0 {
         return last;
@@ -17,7 +17,7 @@ pub fn calculate_total_fuel(input: i64) -> i64{
     }
 }
 
-pub fn calculate_full_fuel(input: &str) -> i64{
+pub fn calculate_full_fuel(input: &str) -> i64 {
     let mut fuel_counter_upper = 0;
 
     for i in input.split_ascii_whitespace() {
@@ -31,7 +31,6 @@ pub fn calculate_full_fuel(input: &str) -> i64{
 
     fuel_counter_upper
 }
-
 
 #[cfg(test)]
 mod test {
