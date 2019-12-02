@@ -29,5 +29,4 @@ mod test {
         assert_eq!(inputs, (76, 21));
         println!("challenge 2.1: {}", 100 * inputs.0 + inputs.1)
     }
-
 }

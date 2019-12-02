@@ -1,4 +1,3 @@
-
 pub fn program_to_vecusize(input: &str) -> Vec<usize> {
     input
         .split_terminator(',')
