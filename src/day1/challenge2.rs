@@ -1,4 +1,4 @@
-use crate::day1::challenge1::{calculate_fuel_str, calculate_fuel};
+use crate::day1::challenge1::calculate_fuel;
 
 pub fn calculate_total_fuel(input: i64) -> i64{
     let mut last = calculate_fuel(input);
@@ -40,24 +40,23 @@ mod test {
     #[test]
     fn test_main_real() {
         let input = include_str!("input");
-        println!("{}", calculate_full_fuel(input));
+        let result = calculate_full_fuel(input);
+        assert_eq!(result, 5010211);
+        println!("challenge 1.2: {}", result);
     }
 
     #[test]
     fn test_main_1() {
-        let input = include_str!("input");
         assert_eq!(calculate_full_fuel("14"), 2);
     }
 
     #[test]
     fn test_main_2() {
-        let input = include_str!("input");
         assert_eq!(calculate_full_fuel("1969"), 966);
     }
 
     #[test]
     fn test_main_3() {
-        let input = include_str!("input");
         assert_eq!(calculate_full_fuel("100756"), 50346);
     }
 }

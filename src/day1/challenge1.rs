@@ -26,30 +26,28 @@ mod test {
     #[test]
     fn test_main_real() {
         let input = include_str!("input");
-        println!("{}", calculate_fuel_str(input));
+        let result = calculate_fuel_str(input);
+        assert_eq!(result, 3342050);
+        println!("challenge 1.1: {}", result);
     }
 
     #[test]
     fn test_main_1() {
-        let input = include_str!("input");
         assert_eq!(calculate_fuel_str("12"), 2);
     }
 
     #[test]
     fn test_main_2() {
-        let input = include_str!("input");
         assert_eq!(calculate_fuel_str("14"), 2);
     }
 
     #[test]
     fn test_main_3() {
-        let input = include_str!("input");
         assert_eq!(calculate_fuel_str("1969"), 654);
     }
 
     #[test]
     fn test_main_4() {
-        let input = include_str!("input");
         assert_eq!(calculate_fuel_str("100756"), 33583);
     }
 }
