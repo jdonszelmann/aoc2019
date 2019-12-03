@@ -65,7 +65,10 @@ impl<'c> CPU<'c> {
             let opcode = self.program[pc];
             let instruction = match self.instructions.get(&opcode) {
                 Some(i) => *i,
-                None => {pc+= 1; continue;},
+                None => {
+                    pc += 1;
+                    continue;
+                }
             };
 
             let length = instruction(self, pc);
