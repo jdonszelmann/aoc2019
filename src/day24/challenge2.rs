@@ -1,5 +1,4 @@
-
-fn main_func(_input: &str) -> u64{
+fn main_func(_input: &str) -> u64 {
     0
 }
 
@@ -11,40 +10,17 @@ mod test {
     fn test_main_real() {
         let input = include_str!("input");
         let result = main_func(input);
-//        assert_eq!(result, value);
+        //        assert_eq!(result, value);
         println!("challenge 24.2: {}", result);
     }
 
     #[test]
     fn test_main_1() {
-        assert_eq!(
-            main_func(""),
-            0
-        );
+        assert_eq!(main_func(""), 0);
     }
 
     #[test]
     fn test_main_2() {
-        assert_eq!(
-            main_func(""),
-            0
-        );
+        assert_eq!(main_func(""), 0);
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

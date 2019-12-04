@@ -1,16 +1,17 @@
-
-pub fn is_sorted<T>(vec: &Vec<T>) -> bool
-    where T: PartialOrd{
-
+pub fn is_sorted<T>(vec: &[T]) -> bool
+where
+    T: PartialOrd,
+{
     for i in vec.windows(2) {
         if i[0] > i[1] {
             return false;
         }
     }
-    return true;
+
+    true
 }
 
-fn criteria(i: u64) -> bool{
+fn criteria(i: u64) -> bool {
     let chars: Vec<char> = format!("{}", i).chars().collect();
     if !is_sorted(&chars) {
         return false;
@@ -26,11 +27,10 @@ fn criteria(i: u64) -> bool{
 }
 
 pub fn count_options(low: u64, high: u64, func: impl Fn(u64) -> bool) -> u64 {
-
     let mut possibilities = 0;
     for i in low..high {
         if func(i) {
-            possibilities+=1;
+            possibilities += 1;
         }
     }
 
@@ -50,57 +50,36 @@ mod test {
 
     #[test]
     fn test_main_1() {
-        assert_eq!(
-            criteria(111111),
-            true
-        );
+        assert_eq!(criteria(111111), true);
     }
 
     #[test]
     fn test_main_2() {
-        assert_eq!(
-            criteria(223450),
-            false
-        );
+        assert_eq!(criteria(223450), false);
     }
 
     #[test]
     fn test_main_3() {
-        assert_eq!(
-            criteria(123789),
-            false
-        );
+        assert_eq!(criteria(123789), false);
     }
 
     #[test]
     fn test_main_4() {
-        assert_eq!(
-            is_sorted(&vec![1,2,3]),
-            true
-        );
+        assert_eq!(is_sorted(&vec![1, 2, 3]), true);
     }
 
     #[test]
     fn test_main_5() {
-        assert_eq!(
-            is_sorted(&vec![3,2,1]),
-            false
-        );
+        assert_eq!(is_sorted(&vec![3, 2, 1]), false);
     }
 
     #[test]
     fn test_main_6() {
-        assert_eq!(
-            is_sorted(&vec![1,3,2,5]),
-            false
-        );
+        assert_eq!(is_sorted(&vec![1, 3, 2, 5]), false);
     }
 
     #[test]
     fn test_main_7() {
-        assert_eq!(
-            is_sorted(&vec![1,1,2]),
-            true
-        );
+        assert_eq!(is_sorted(&vec![1, 1, 2]), true);
     }
 }

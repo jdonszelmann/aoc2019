@@ -1,6 +1,6 @@
 use crate::day4::challenge1::is_sorted;
 
-fn criteria(i: u64) -> bool{
+fn criteria(i: u64) -> bool {
     let chars: Vec<char> = format!("{}", i).chars().collect();
     if !is_sorted(&chars) {
         return false;
@@ -28,25 +28,16 @@ mod test {
 
     #[test]
     fn test_main_1() {
-        assert_eq!(
-            criteria(112233),
-            true
-        );
+        assert_eq!(criteria(112233), true);
     }
 
     #[test]
     fn test_main_2() {
-        assert_eq!(
-            criteria(123444),
-            false
-        );
+        assert_eq!(criteria(123444), false);
     }
 
     #[test]
     fn test_main_3() {
-        assert_eq!(
-            criteria(111122),
-            true
-        );
+        assert_eq!(criteria(111122), true);
     }
 }
