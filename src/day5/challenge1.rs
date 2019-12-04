@@ -1,3 +1,4 @@
+
 fn main_func(_input: &str) -> u64 {
     0
 }
@@ -8,6 +9,7 @@ mod test {
 
     #[test]
     fn test_main_real() {
+
         let input = include_str!("input");
         let result = main_func(input);
         //        assert_eq!(result, value);

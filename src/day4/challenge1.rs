@@ -11,7 +11,7 @@ where
     true
 }
 
-fn criteria(i: u64) -> bool {
+fn criteria(i: &u64) -> bool {
     let chars: Vec<char> = format!("{}", i).chars().collect();
     if !is_sorted(&chars) {
         return false;
@@ -26,15 +26,8 @@ fn criteria(i: u64) -> bool {
     false
 }
 
-pub fn count_options(low: u64, high: u64, func: impl Fn(u64) -> bool) -> u64 {
-    let mut possibilities = 0;
-    for i in low..high {
-        if func(i) {
-            possibilities += 1;
-        }
-    }
-
-    possibilities
+pub fn count_options(low: u64, high: u64, func: impl FnMut(&u64) -> bool) -> u64 {
+    (low..high).filter(func).count() as u64
 }
 
 #[cfg(test)]
@@ -50,17 +43,17 @@ mod test {
 
     #[test]
     fn test_main_1() {
-        assert_eq!(criteria(111111), true);
+        assert_eq!(criteria(&111111), true);
     }
 
     #[test]
     fn test_main_2() {
-        assert_eq!(criteria(223450), false);
+        assert_eq!(criteria(&223450), false);
     }
 
     #[test]
     fn test_main_3() {
-        assert_eq!(criteria(123789), false);
+        assert_eq!(criteria(&123789), false);
     }
 
     #[test]
