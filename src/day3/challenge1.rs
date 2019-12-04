@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-fn manhattan(coord: &(i32, i32)) -> i32 {
+fn manhattan(coord: (i32, i32)) -> i32 {
     coord.0.abs() + coord.1.abs()
 }
 
@@ -44,7 +44,7 @@ fn find_distance(input: &str) -> i32 {
 
     paths[0]
         .intersection(&paths[1])
-        .map(manhattan)
+        .map(|i| manhattan(*i))
         .filter(|i| *i != 0)
         .min()
         .expect("no minimum")
