@@ -1,13 +1,13 @@
 use std::collections::HashSet;
 
-fn manhattan(coord: (i32, i32)) -> i32 {
+fn manhattan(coord: &(i32, i32)) -> i32 {
     coord.0.abs() + coord.1.abs()
 }
 
 fn find_distance(input: &str) -> i32 {
     let mut paths = vec![];
 
-    for (cycle, path) in input.split_terminator('\n').enumerate() {
+    for (cycle, path) in input.lines().enumerate() {
         let mut x = 0;
         let mut y = 0;
         paths.push(HashSet::new());
@@ -42,15 +42,7 @@ fn find_distance(input: &str) -> i32 {
         }
     }
 
-    let mut mindistance = std::i32::MAX;
-    for i in paths[0].intersection(&paths[1]) {
-        let d = manhattan(*i);
-        if d < mindistance && i != &(0, 0) {
-            mindistance = d;
-        }
-    }
-
-    mindistance
+    paths[0].intersection(&paths[1]).map(manhattan).filter(|i| *i!=0).min().expect("no minimum")
 }
 
 #[cfg(test)]
@@ -61,8 +53,7 @@ mod test {
     fn test_main_1() {
         assert_eq!(
             find_distance(
-                "R75,D30,R83,U83,L12,D49,R71,U7,L72
-U62,R66,U55,R34,D71,R55,D58,R83"
+                "R75,D30,R83,U83,L12,D49,R71,U7,L72\nU62,R66,U55,R34,D71,R55,D58,R83"
             ),
             159
         );
@@ -72,8 +63,7 @@ U62,R66,U55,R34,D71,R55,D58,R83"
     fn test_main_3() {
         assert_eq!(
             find_distance(
-                "R8,U5,L5,D3,
-U7,R6,D4,L4"
+                "R8,U5,L5,D3,\nU7,R6,D4,L4"
             ),
             6
         );
@@ -91,8 +81,7 @@ U7,R6,D4,L4"
     fn test_main_2() {
         assert_eq!(
             find_distance(
-                "R98,U47,R26,D63,R33,U87,L62,D20,R33,U53,R51
-U98,R91,D20,R16,D67,R40,U7,R15,U6,R7"
+                "R98,U47,R26,D63,R33,U87,L62,D20,R33,U53,R51\nU98,R91,D20,R16,D67,R40,U7,R15,U6,R7"
             ),
             135
         );
