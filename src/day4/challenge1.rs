@@ -11,6 +11,7 @@ where
     true
 }
 
+#[allow(clippy::trivially_copy_pass_by_ref)]
 fn criteria(i: &u64) -> bool {
     let chars: Vec<char> = format!("{}", i).chars().collect();
     if !is_sorted(&chars) {
@@ -31,11 +32,11 @@ pub fn count_options(low: u64, high: u64, func: impl FnMut(&u64) -> bool) -> u64
 }
 
 #[cfg(test)]
-mod test {
+pub mod test {
     use crate::day4::challenge1::{count_options, criteria, is_sorted};
 
     #[test]
-    fn test_main_real() {
+    pub fn test_main_real() {
         let result = count_options(248345, 746315, criteria);
         assert_eq!(result, 1019);
         println!("challenge 4.1: {}", result);

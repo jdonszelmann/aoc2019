@@ -1,5 +1,6 @@
 use crate::day4::challenge1::is_sorted;
 
+#[allow(clippy::trivially_copy_pass_by_ref)]
 fn criteria(i: &u64) -> bool {
     let chars: Vec<char> = format!("{}", i).chars().collect();
     if !is_sorted(&chars) {

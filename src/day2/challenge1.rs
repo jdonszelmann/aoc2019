@@ -1,27 +1,60 @@
+use crate::day2::challenge1::ParameterMode::{Immediate, Position};
 use std::collections::HashMap;
 
-type Instruction = dyn Fn(&mut CPU, usize) -> usize;
+pub enum ParameterMode {
+    Position,
+    Immediate,
+}
+
+// returns if no branch occured
+pub type Instruction = dyn Fn(&mut CPU, &mut usize, &[isize]) -> bool;
 
 pub struct CPU<'c> {
-    program: Vec<usize>,
-    original_program: Vec<usize>,
-    instructions: HashMap<usize, &'c Instruction>,
+    pub program: Vec<isize>,
+    original_program: Vec<isize>,
+    instructions: HashMap<usize, (&'c Instruction, usize)>,
     stopped: bool,
+
+    pub input: Vec<isize>,
+    pub inpoffset: isize,
+
+    pub outputbuffer: Vec<isize>,
 }
 
 impl<'c> CPU<'c> {
-    pub fn new(program: Vec<usize>) -> Self {
+    pub fn new(program: Vec<isize>) -> Self {
         Self {
             original_program: program.to_vec(),
             program,
             instructions: HashMap::new(),
             stopped: false,
+
+            input: vec![],
+            inpoffset: 0,
+
+            outputbuffer: vec![],
         }
+    }
+
+    pub fn extend_input(&mut self, inp: &[isize]) {
+        self.input.extend(inp);
+    }
+
+    pub fn add_input(&mut self, inp: isize) {
+        self.input.push(inp);
+    }
+
+    pub fn set_input(&mut self, inp: Vec<isize>) {
+        self.input = inp;
     }
 
     pub fn reset(&mut self) {
         self.program = self.original_program.to_vec();
         self.stopped = false;
+    }
+
+    pub fn get_output(&self) -> &Vec<isize> {
+        &self.outputbuffer
     }
 
     /// Create cpu from string of integers
@@ -43,27 +76,31 @@ impl<'c> CPU<'c> {
             .join(",")
     }
 
-    pub fn get_program(self) -> Vec<usize> {
+    pub fn get_program(self) -> Vec<isize> {
         self.program
     }
 
-    pub fn add_instruction(&mut self, opcode: usize, instruction: &'c Instruction) {
-        self.instructions.insert(opcode, instruction);
+    pub fn add_instruction(&mut self, opcode: usize, length: usize, instruction: &'c Instruction) {
+        self.instructions.insert(opcode, (instruction, length));
     }
 
-    pub fn set_program_byte(&mut self, index: usize, value: usize) {
+    pub fn set_program_byte(&mut self, index: usize, value: isize) {
         self.program[index] = value;
     }
 
-    pub fn get_program_byte(&self, index: usize) -> usize {
+    pub fn get_program_byte(&self, index: usize) -> isize {
         self.program[index]
     }
 
     pub fn run(&mut self) {
         let mut pc = 0;
         while !self.stopped {
-            let opcode = self.program[pc];
-            let instruction = match self.instructions.get(&opcode) {
+            let code = self.program[pc];
+            let strcode = format!("{:05}", code);
+
+            let opcode: usize = strcode[3..5].parse().expect("should be int");
+
+            let (instruction, length) = match self.instructions.get(&opcode) {
                 Some(i) => *i,
                 None => {
                     pc += 1;
@@ -71,8 +108,31 @@ impl<'c> CPU<'c> {
                 }
             };
 
-            let length = instruction(self, pc);
-            pc += length;
+            let mut params = vec![];
+            let numparams = length - 1;
+            for i in 0..numparams {
+                let mode = match strcode.chars().nth(2 - i) {
+                    Some('0') => Position,
+                    Some('1') => Immediate,
+                    _ => unimplemented!(),
+                };
+
+                params.push(match mode {
+                    Position => {
+                        let val = self.program[pc + i + 1];
+                        if val < self.program.len() as isize && val >= 0 {
+                            self.program[val as usize]
+                        } else {
+                            0
+                        }
+                    }
+                    Immediate => self.program[pc + i + 1],
+                });
+            }
+
+            if instruction(self, &mut pc, &params) {
+                pc += length;
+            }
         }
     }
 
@@ -81,28 +141,28 @@ impl<'c> CPU<'c> {
     }
 }
 
-pub const MUL: &Instruction = &|cpu, pc| {
-    let dst = cpu.program[pc + 3];
-    cpu.program[dst] = cpu.program[cpu.program[pc + 1]] * cpu.program[cpu.program[pc + 2]];
-    4
+pub const MUL: &Instruction = &|cpu, pc, params| {
+    let dst = cpu.program[*pc + 3];
+    cpu.program[dst as usize] = params[0] * params[1];
+    true
 };
 
-pub const ADD: &Instruction = &|cpu, pc| {
-    let dst = cpu.program[pc + 3];
-    cpu.program[dst] = cpu.program[cpu.program[pc + 1]] + cpu.program[cpu.program[pc + 2]];
-    4
+pub const ADD: &Instruction = &|cpu, pc, params| {
+    let dst = cpu.program[*pc + 3];
+    cpu.program[dst as usize] = params[0] + params[1];
+    true
 };
 
-pub const STOP: &Instruction = &|cpu, _pc| {
+pub const STOP: &Instruction = &|cpu, _pc, _params| {
     cpu.stop();
-    1
+    true
 };
 
-fn execute_1202(program: &str) -> usize {
+fn execute_1202(program: &str) -> isize {
     let mut cpu = CPU::from(program);
-    cpu.add_instruction(1, ADD);
-    cpu.add_instruction(2, MUL);
-    cpu.add_instruction(99, STOP);
+    cpu.add_instruction(1, 4, ADD);
+    cpu.add_instruction(2, 4, MUL);
+    cpu.add_instruction(99, 1, STOP);
 
     cpu.set_program_byte(1, 12);
     cpu.set_program_byte(2, 2);
@@ -114,9 +174,9 @@ fn execute_1202(program: &str) -> usize {
 
 fn execute_normal(program: &str) -> String {
     let mut cpu = CPU::from(program);
-    cpu.add_instruction(1, ADD);
-    cpu.add_instruction(2, MUL);
-    cpu.add_instruction(99, STOP);
+    cpu.add_instruction(1, 4, ADD);
+    cpu.add_instruction(2, 4, MUL);
+    cpu.add_instruction(99, 1, STOP);
 
     cpu.run();
 
