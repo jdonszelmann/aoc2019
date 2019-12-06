@@ -4,7 +4,7 @@ fn main_func(_input: &str) -> u64 {
 
 #[cfg(test)]
 mod test {
-    use crate::day8::challenge1::main_func;
+    use crate::day08::challenge1::main_func;
 
     #[test]
     fn test_main_real() {

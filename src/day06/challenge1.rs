@@ -28,7 +28,7 @@ impl<'o> OrbitTree<'o> {
         }
         .clone();
 
-        let parent_count = RefCell::borrow(&parent_node).count;
+        let parent_count = parent_node.borrow().count;
         let child = Rc::new(RefCell::new(Tree::new(parent_count, id)));
 
         self.nodes.insert(id, child.clone());
@@ -44,8 +44,8 @@ impl<'o> OrbitTree<'o> {
 
         loop {
             iterations += 1;
-            curr = self.nodes.get(RefCell::borrow(curr).parent)?;
-            if let Some(i) = Self::search_leaf(RefCell::borrow(curr), dst, 0) {
+            curr = self.nodes.get(curr.borrow().parent)?;
+            if let Some(i) = Self::search_leaf(curr.borrow(), dst, 0) {
                 return Some(i + iterations - 2);
             }
         }
@@ -57,7 +57,7 @@ impl<'o> OrbitTree<'o> {
         }
 
         for i in &start.children {
-            if let Some(i) = Self::search_leaf(RefCell::borrow(i), value, distance + 1) {
+            if let Some(i) = Self::search_leaf(i.borrow(), value, distance + 1) {
                 return Some(i);
             }
         }
@@ -66,7 +66,7 @@ impl<'o> OrbitTree<'o> {
     }
 
     pub fn dfs(&self) -> u64 {
-        RefCell::borrow(&self.tree).dfs()
+        self.tree.borrow().dfs()
     }
 }
 
@@ -104,20 +104,9 @@ impl<'t> Tree<'t> {
     pub fn dfs(&self) -> u64 {
         let mut total = self.count;
         for i in &self.children {
-            total += RefCell::borrow(&i).dfs();
+            total += i.borrow().dfs();
         }
         total
-    }
-}
-
-impl<'t> Default for Tree<'t> {
-    fn default() -> Self {
-        Self {
-            children: vec![],
-            count: 0,
-            parent: "",
-            value: "",
-        }
     }
 }
 
@@ -166,7 +155,7 @@ fn main_func(input: &str) -> u64 {
 
 #[cfg(test)]
 mod test {
-    use crate::day6::challenge1::main_func;
+    use crate::day06::challenge1::main_func;
 
     #[test]
     fn test_main_real() {

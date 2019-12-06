@@ -1,4 +1,4 @@
-use crate::day2::challenge1::{Instruction, ADD, CPU, MUL, STOP};
+use crate::day02::challenge1::{Instruction, ADD, CPU, MUL, STOP};
 
 pub const INP: &Instruction = &|cpu, pc, _params| {
     let dst = cpu.program[*pc + 1];
@@ -48,7 +48,7 @@ fn get_output(program: &str, inputs: Vec<isize>) -> Vec<isize> {
 
 #[cfg(test)]
 mod test {
-    use crate::day5::challenge1::{get_output, main_func};
+    use crate::day05::challenge1::{get_output, main_func};
 
     #[test]
     fn test_main_real() {

@@ -1,5 +1,5 @@
-use crate::day2::challenge1::{Instruction, ADD, CPU, MUL, STOP};
-use crate::day5::challenge1::{INP, OUT};
+use crate::day02::challenge1::{Instruction, ADD, CPU, MUL, STOP};
+use crate::day05::challenge1::{INP, OUT};
 
 pub const BT: &Instruction = &|_cpu, pc, params| {
     if params[0] != 0 {
@@ -63,7 +63,7 @@ fn get_output(program: &str, inputs: Vec<isize>) -> Vec<isize> {
 
 #[cfg(test)]
 mod test {
-    use crate::day5::challenge2::get_output;
+    use crate::day05::challenge2::get_output;
 
     #[test]
     fn test_main_real() {

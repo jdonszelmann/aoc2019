@@ -1,9 +1,9 @@
-use crate::day1::challenge1::calculate_fuel;
+use crate::day01::challenge1::calculate_fuel;
 
 pub fn calculate_total_fuel(input: i64) -> i64 {
     let mut last = calculate_fuel(input);
     if last <= 0 {
-        return last;
+        return 0;
     }
 
     let mut total = last;
@@ -34,7 +34,7 @@ pub fn calculate_full_fuel(input: &str) -> i64 {
 
 #[cfg(test)]
 mod test {
-    use crate::day1::challenge2::calculate_full_fuel;
+    use crate::day01::challenge2::calculate_full_fuel;
 
     #[test]
     fn test_main_real() {
@@ -57,5 +57,15 @@ mod test {
     #[test]
     fn test_main_3() {
         assert_eq!(calculate_full_fuel("100756"), 50346);
+    }
+
+    #[test]
+    fn test_main_4() {
+        assert_eq!(calculate_full_fuel("test"), 0);
+    }
+
+    #[test]
+    fn test_main_5() {
+        assert_eq!(calculate_full_fuel("0"), 0);
     }
 }

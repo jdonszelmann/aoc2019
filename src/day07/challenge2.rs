@@ -4,14 +4,14 @@ fn main_func(_input: &str) -> u64 {
 
 #[cfg(test)]
 mod test {
-    use crate::day8::challenge2::main_func;
+    use crate::day07::challenge2::main_func;
 
     #[test]
     fn test_main_real() {
         let input = include_str!("input");
         let result = main_func(input);
         //        assert_eq!(result, value);
-        println!("challenge 8.2: {}", result);
+        println!("challenge 7.2: {}", result);
     }
 
     #[test]

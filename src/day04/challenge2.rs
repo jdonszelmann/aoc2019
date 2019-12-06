@@ -1,4 +1,4 @@
-use crate::day4::challenge1::is_sorted;
+use crate::day04::challenge1::is_sorted;
 
 #[allow(clippy::trivially_copy_pass_by_ref)]
 fn criteria(i: &u64) -> bool {
@@ -18,8 +18,8 @@ fn criteria(i: &u64) -> bool {
 
 #[cfg(test)]
 mod test {
-    use crate::day4::challenge1::count_options;
-    use crate::day4::challenge2::criteria;
+    use crate::day04::challenge1::count_options;
+    use crate::day04::challenge2::criteria;
 
     #[test]
     fn test_main_real() {

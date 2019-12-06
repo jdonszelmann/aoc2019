@@ -1,4 +1,4 @@
-use crate::day2::challenge1::{ADD, CPU, MUL, STOP};
+use crate::day02::challenge1::{ADD, CPU, MUL, STOP};
 
 fn find_inputs(program: &str, value: isize, max: isize) -> Option<(isize, isize)> {
     let mut cpu = CPU::from(program);
@@ -24,7 +24,7 @@ fn find_inputs(program: &str, value: isize, max: isize) -> Option<(isize, isize)
 
 #[cfg(test)]
 mod test {
-    use crate::day2::challenge2::find_inputs;
+    use crate::day02::challenge2::find_inputs;
 
     #[test]
     fn test_main_real() {
@@ -32,5 +32,10 @@ mod test {
         let inputs = find_inputs(input, 19690720, 100).unwrap();
         assert_eq!(inputs, (76, 21));
         println!("challenge 2.2: {}", 100 * inputs.0 + inputs.1)
+    }
+
+    #[test]
+    fn test_main_1() {
+        assert_eq!(find_inputs("1,0,0,0,99", 1, 1), None);
     }
 }

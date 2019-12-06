@@ -33,7 +33,7 @@ pub fn count_options(low: u64, high: u64, func: impl FnMut(&u64) -> bool) -> u64
 
 #[cfg(test)]
 pub mod test {
-    use crate::day4::challenge1::{count_options, criteria, is_sorted};
+    use crate::day04::challenge1::{count_options, criteria, is_sorted};
 
     #[test]
     pub fn test_main_real() {

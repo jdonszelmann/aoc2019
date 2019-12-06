@@ -1,4 +1,4 @@
-use crate::day6::challenge1::build_orbittree;
+use crate::day06::challenge1::build_orbittree;
 
 fn main_func(input: &str) -> u64 {
     let tree = build_orbittree(input);
@@ -8,7 +8,7 @@ fn main_func(input: &str) -> u64 {
 
 #[cfg(test)]
 mod test {
-    use crate::day6::challenge2::main_func;
+    use crate::day06::challenge2::main_func;
 
     #[test]
     fn test_main_real() {

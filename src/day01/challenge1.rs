@@ -19,7 +19,7 @@ pub fn calculate_fuel_str(input: &str) -> i64 {
 
 #[cfg(test)]
 mod test {
-    use crate::day1::challenge1::calculate_fuel_str;
+    use crate::day01::challenge1::calculate_fuel_str;
 
     #[test]
     fn test_main_real() {
@@ -47,5 +47,10 @@ mod test {
     #[test]
     fn test_main_4() {
         assert_eq!(calculate_fuel_str("100756"), 33583);
+    }
+
+    #[test]
+    fn test_main_5() {
+        assert_eq!(calculate_fuel_str("test"), 0);
     }
 }

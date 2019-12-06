@@ -1,4 +1,4 @@
-use crate::day2::challenge1::ParameterMode::{Immediate, Position};
+use crate::day02::challenge1::ParameterMode::{Immediate, Position};
 use std::collections::HashMap;
 
 pub enum ParameterMode {
@@ -36,14 +36,6 @@ impl<'c> CPU<'c> {
         }
     }
 
-    pub fn extend_input(&mut self, inp: &[isize]) {
-        self.input.extend(inp);
-    }
-
-    pub fn add_input(&mut self, inp: isize) {
-        self.input.push(inp);
-    }
-
     pub fn set_input(&mut self, inp: Vec<isize>) {
         self.input = inp;
     }
@@ -74,10 +66,6 @@ impl<'c> CPU<'c> {
             .map(|i| i.to_string())
             .collect::<Vec<String>>()
             .join(",")
-    }
-
-    pub fn get_program(self) -> Vec<isize> {
-        self.program
     }
 
     pub fn add_instruction(&mut self, opcode: usize, length: usize, instruction: &'c Instruction) {
@@ -123,7 +111,7 @@ impl<'c> CPU<'c> {
                         if val < self.program.len() as isize && val >= 0 {
                             self.program[val as usize]
                         } else {
-                            0
+                            panic!("Index out of bounds");
                         }
                     }
                     Immediate => self.program[pc + i + 1],
@@ -185,7 +173,7 @@ fn execute_normal(program: &str) -> String {
 
 #[cfg(test)]
 mod test {
-    use crate::day2::challenge1::{execute_1202, execute_normal};
+    use crate::day02::challenge1::{execute_1202, execute_normal, CPU};
 
     #[test]
     fn test_main_real() {
@@ -213,5 +201,32 @@ mod test {
     #[test]
     fn test_main_4() {
         assert_eq!(execute_normal("1,1,1,4,99,5,6,0,99"), "30,1,1,4,2,5,6,0,99");
+    }
+
+    #[test]
+    fn test_main_5() {
+        assert_eq!(CPU::from("1").program, vec![1]);
+    }
+
+    #[test]
+    fn test_main_6() {
+        assert_eq!(CPU::from("test,test").program, vec![]);
+    }
+
+    #[test]
+    fn test_main_7() {
+        assert_eq!(execute_normal("8,9,99"), "8,9,99");
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_main_8() {
+        execute_normal("55501");
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_main_9() {
+        execute_normal("1,10,1,1,99");
     }
 }
