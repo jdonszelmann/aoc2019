@@ -6,7 +6,7 @@ pub enum ParameterMode {
     Immediate,
 }
 
-// returns if no branch occured
+/// returns true if the pc should be autoincremented
 pub type Instruction = dyn Fn(&mut CPU, &mut usize, &[isize]) -> bool;
 
 pub struct CPU<'c> {
