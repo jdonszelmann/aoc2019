@@ -1,26 +1,26 @@
 use crate::day02::challenge1::{Instruction, ADD, CPU, MUL, STOP};
 use crate::day05::challenge1::{INP, OUT};
 
-pub const BT: &Instruction = &|_cpu, pc, params| {
+pub const BT: &Instruction = &|cpu, params| {
     if params[0] != 0 {
-        *pc = params[1] as usize;
+        cpu.pc = params[1] as usize;
         false
     } else {
         true
     }
 };
 
-pub const BF: &Instruction = &|_cpu, pc, params| {
+pub const BF: &Instruction = &|cpu, params| {
     if params[0] == 0 {
-        *pc = params[1] as usize;
+        cpu.pc = params[1] as usize;
         false
     } else {
         true
     }
 };
 
-pub const LT: &Instruction = &|cpu, pc, params| {
-    let dst = cpu.program[*pc + 3] as usize;
+pub const LT: &Instruction = &|cpu, params| {
+    let dst = cpu.program[cpu.pc + 3] as usize;
     if params[0] < params[1] {
         cpu.program[dst] = 1;
     } else {
@@ -29,8 +29,8 @@ pub const LT: &Instruction = &|cpu, pc, params| {
     true
 };
 
-pub const EQ: &Instruction = &|cpu, pc, params| {
-    let dst = cpu.program[*pc + 3] as usize;
+pub const EQ: &Instruction = &|cpu, params| {
+    let dst = cpu.program[cpu.pc + 3] as usize;
     if params[0] == params[1] {
         cpu.program[dst] = 1;
     } else {

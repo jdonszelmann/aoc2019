@@ -7,19 +7,25 @@ pub enum ParameterMode {
 }
 
 /// returns true if the pc should be autoincremented
-pub type Instruction = dyn Fn(&mut CPU, &mut usize, &[isize]) -> bool;
+pub type Instruction = dyn Fn(&mut CPU, &[isize]) -> bool;
 
 pub struct CPU<'c> {
     pub program: Vec<isize>,
     original_program: Vec<isize>,
     instructions: HashMap<usize, (&'c Instruction, usize)>,
     stopped: bool,
+    realstop: bool,
 
     pub input: Vec<isize>,
     pub inpoffset: isize,
 
     pub outputbuffer: Vec<isize>,
+    pub pc: usize,
+
+    pub output_cb: &'c dyn Fn(&mut CPU, isize) -> (),
 }
+
+pub fn default_cb(_: &mut CPU, _: isize) {}
 
 impl<'c> CPU<'c> {
     pub fn new(program: Vec<isize>) -> Self {
@@ -28,11 +34,15 @@ impl<'c> CPU<'c> {
             program,
             instructions: HashMap::new(),
             stopped: false,
+            realstop: false,
 
             input: vec![],
             inpoffset: 0,
 
             outputbuffer: vec![],
+            output_cb: &default_cb,
+
+            pc: 0,
         }
     }
 
@@ -40,9 +50,37 @@ impl<'c> CPU<'c> {
         self.input = inp;
     }
 
+    pub fn add_to_input(&mut self, inp: isize) {
+        self.input.push(inp);
+    }
+
     pub fn reset(&mut self) {
         self.program = self.original_program.to_vec();
         self.stopped = false;
+        self.inpoffset = 0;
+        self.outputbuffer = vec![];
+        self.input = vec![];
+        self.pc = 0;
+        self.realstop = false;
+        self.output_cb = &default_cb;
+    }
+
+    pub fn clone(&self) -> Self {
+        Self {
+            original_program: self.program.to_vec(),
+            program: self.program.to_vec(),
+            instructions: self.instructions.clone(),
+            stopped: self.stopped,
+            realstop: self.realstop,
+
+            input: vec![],
+            inpoffset: 0,
+
+            outputbuffer: vec![],
+            output_cb: self.output_cb,
+
+            pc: self.pc,
+        }
     }
 
     pub fn get_output(&self) -> &Vec<isize> {
@@ -81,9 +119,18 @@ impl<'c> CPU<'c> {
     }
 
     pub fn run(&mut self) {
-        let mut pc = 0;
+        self.pc = 0;
+        self.run_real();
+    }
+
+    fn run_real(&mut self) {
         while !self.stopped {
-            let code = self.program[pc];
+            if self.pc >= self.program.len() {
+                self.stop();
+                return;
+            }
+
+            let code = self.program[self.pc];
             let strcode = format!("{:05}", code);
 
             let opcode: usize = strcode[3..5].parse().expect("should be int");
@@ -91,7 +138,7 @@ impl<'c> CPU<'c> {
             let (instruction, length) = match self.instructions.get(&opcode) {
                 Some(i) => *i,
                 None => {
-                    pc += 1;
+                    self.pc += 1;
                     continue;
                 }
             };
@@ -107,41 +154,57 @@ impl<'c> CPU<'c> {
 
                 params.push(match mode {
                     Position => {
-                        let val = self.program[pc + i + 1];
+                        let val = self.program[self.pc + i + 1];
                         if val < self.program.len() as isize && val >= 0 {
                             self.program[val as usize]
                         } else {
                             panic!("Index out of bounds");
                         }
                     }
-                    Immediate => self.program[pc + i + 1],
+                    Immediate => self.program[self.pc + i + 1],
                 });
             }
 
-            if instruction(self, &mut pc, &params) {
-                pc += length;
+            if instruction(self, &params) {
+                self.pc += length;
             }
+        }
+    }
+
+    pub fn resume(&mut self) {
+        if !self.realstop {
+            self.stopped = false;
+            self.run_real();
         }
     }
 
     pub fn stop(&mut self) {
         self.stopped = true;
+        self.realstop = true;
+    }
+
+    pub fn pause(&mut self) {
+        self.stopped = true;
+    }
+
+    pub fn is_really_stopped(&self) -> bool {
+        self.realstop
     }
 }
 
-pub const MUL: &Instruction = &|cpu, pc, params| {
-    let dst = cpu.program[*pc + 3];
+pub const MUL: &Instruction = &|cpu, params| {
+    let dst = cpu.program[cpu.pc + 3];
     cpu.program[dst as usize] = params[0] * params[1];
     true
 };
 
-pub const ADD: &Instruction = &|cpu, pc, params| {
-    let dst = cpu.program[*pc + 3];
+pub const ADD: &Instruction = &|cpu, params| {
+    let dst = cpu.program[cpu.pc + 3];
     cpu.program[dst as usize] = params[0] + params[1];
     true
 };
 
-pub const STOP: &Instruction = &|cpu, _pc, _params| {
+pub const STOP: &Instruction = &|cpu, _params| {
     cpu.stop();
     true
 };
