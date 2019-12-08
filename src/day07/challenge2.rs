@@ -34,37 +34,21 @@ pub fn compute_permutation(cpu0: &mut CPU, permutation: Vec<isize>) -> isize {
         cpu0.outputbuffer = vec![];
 
         cpu1.resume();
-        if cpu1.is_really_stopped() {
-            break last[0];
-        }
-
         last[1] = cpu1.get_output()[0];
         cpu2.add_to_input(last[1]);
         cpu1.outputbuffer = vec![];
 
         cpu2.resume();
-        if cpu2.is_really_stopped() {
-            break last[1];
-        }
-
         last[2] = cpu2.get_output()[0];
         cpu3.add_to_input(last[2]);
         cpu2.outputbuffer = vec![];
 
         cpu3.resume();
-        if cpu3.is_really_stopped() {
-            break last[2];
-        }
-
         last[3] = cpu3.get_output()[0];
         cpu4.add_to_input(last[3]);
         cpu3.outputbuffer = vec![];
 
         cpu4.resume();
-        if cpu4.is_really_stopped() {
-            break last[3];
-        }
-
         last[4] = cpu4.get_output()[0];
         cpu4.outputbuffer = vec![];
     }
