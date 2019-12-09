@@ -9,4 +9,4 @@ edition = "2018"
 [dependencies]
 
 [profile.test]
-opt-level = 3
+#opt-level = 3

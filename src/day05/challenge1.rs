@@ -1,14 +1,13 @@
 use crate::day02::challenge1::{Instruction, ADD, CPU, MUL, STOP};
 
-pub const INP: &Instruction = &|cpu, _params| {
-    let dst = cpu.program[cpu.pc + 1];
+pub const INP: &Instruction = &|cpu, _params, directparams| {
     let value = cpu.input[cpu.inpoffset as usize];
     cpu.inpoffset += 1;
-    cpu.program[dst as usize] = value;
+    cpu.program[directparams[0]] = value;
     true
 };
 
-pub const OUT: &Instruction = &|cpu, params| {
+pub const OUT: &Instruction = &|cpu, params, _directparams| {
     let value = params[0];
     cpu.outputbuffer.push(value);
     (cpu.output_cb)(cpu, value);

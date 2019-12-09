@@ -1,4 +1,4 @@
-use std::io::Write;
+use std::fmt::Write;
 
 fn render(input: &str, width: usize, height: usize) -> Vec<Vec<char>> {
     let mut chariter = input.chars();
@@ -22,7 +22,7 @@ fn render(input: &str, width: usize, height: usize) -> Vec<Vec<char>> {
 
 fn main_func(input: &str, width: usize, height: usize) -> String {
     let rendered = render(input, width, height);
-    let mut res = vec![];
+    let mut res = String::new();
     writeln!(&mut res).expect("Couldn't write");
 
     for row in rendered.iter().take(height) {
@@ -37,7 +37,7 @@ fn main_func(input: &str, width: usize, height: usize) -> String {
         writeln!(&mut res).expect("Couldn't write");
     }
 
-    String::from_utf8_lossy(&res).into_owned()
+    res
 }
 
 #[cfg(test)]
@@ -58,7 +58,7 @@ mod test {
              █    █  █ █    █    █  █ \n\
              █    █  █ █    ████  ██  \n"
         );
-        println!("challenge 8.1: {}", result);
+        println!("challenge 8.2: {}", result);
     }
 
     #[test]

@@ -1,13 +1,14 @@
-use crate::day02::challenge1::ParameterMode::{Immediate, Position};
+use crate::day02::challenge1::ParameterMode::{Immediate, Position, Relative};
 use std::collections::HashMap;
 
 pub enum ParameterMode {
     Position,
     Immediate,
+    Relative,
 }
 
 /// returns true if the pc should be autoincremented
-pub type Instruction = dyn Fn(&mut CPU, &[isize]) -> bool;
+pub type Instruction = dyn Fn(&mut CPU, &[isize], &[usize]) -> bool;
 
 pub struct CPU<'c> {
     pub program: Vec<isize>,
@@ -23,6 +24,8 @@ pub struct CPU<'c> {
     pub pc: usize,
 
     pub output_cb: &'c dyn Fn(&mut CPU, isize) -> (),
+
+    pub relative_base: isize,
 }
 
 pub fn default_cb(_: &mut CPU, _: isize) {}
@@ -43,6 +46,8 @@ impl<'c> CPU<'c> {
             output_cb: &default_cb,
 
             pc: 0,
+
+            relative_base: 0,
         }
     }
 
@@ -63,6 +68,7 @@ impl<'c> CPU<'c> {
         self.pc = 0;
         self.realstop = false;
         self.output_cb = &default_cb;
+        self.relative_base = 0;
     }
 
     pub fn clone(&self) -> Self {
@@ -80,6 +86,7 @@ impl<'c> CPU<'c> {
             output_cb: self.output_cb,
 
             pc: self.pc,
+            relative_base: self.relative_base,
         }
     }
 
@@ -144,28 +151,41 @@ impl<'c> CPU<'c> {
             };
 
             let mut params = vec![];
+            let mut directparams = vec![];
             let numparams = length - 1;
             for i in 0..numparams {
                 let mode = match strcode.chars().nth(2 - i) {
                     Some('0') => Position,
                     Some('1') => Immediate,
+                    Some('2') => Relative,
                     _ => unimplemented!(),
                 };
 
                 params.push(match mode {
                     Position => {
-                        let val = self.program[self.pc + i + 1];
-                        if val < self.program.len() as isize && val >= 0 {
-                            self.program[val as usize]
-                        } else {
-                            panic!("Index out of bounds");
+                        let val = self.program[self.pc + i + 1] as usize;
+                        if val >= self.program.len() {
+                            self.program.resize(val + 1, 0);
                         }
+                        directparams.push(val as usize);
+                        self.program[val as usize]
                     }
-                    Immediate => self.program[self.pc + i + 1],
+                    Immediate => {
+                        directparams.push(self.program[self.pc + i + 1] as usize);
+                        self.program[self.pc + i + 1]
+                    }
+                    Relative => {
+                        let val = (self.program[self.pc + i + 1] + self.relative_base) as usize;
+                        if val >= self.program.len() {
+                            self.program.resize(val + 1, 0);
+                        }
+                        directparams.push(val as usize);
+                        self.program[val as usize]
+                    }
                 });
             }
 
-            if instruction(self, &params) {
+            if instruction(self, &params, &directparams) {
                 self.pc += length;
             }
         }
@@ -192,19 +212,17 @@ impl<'c> CPU<'c> {
     }
 }
 
-pub const MUL: &Instruction = &|cpu, params| {
-    let dst = cpu.program[cpu.pc + 3];
-    cpu.program[dst as usize] = params[0] * params[1];
+pub const MUL: &Instruction = &|cpu, params, directparams| {
+    cpu.program[directparams[2]] = params[0] * params[1];
     true
 };
 
-pub const ADD: &Instruction = &|cpu, params| {
-    let dst = cpu.program[cpu.pc + 3];
-    cpu.program[dst as usize] = params[0] + params[1];
+pub const ADD: &Instruction = &|cpu, params, directparams| {
+    cpu.program[directparams[2]] = params[0] + params[1];
     true
 };
 
-pub const STOP: &Instruction = &|cpu, _params| {
+pub const STOP: &Instruction = &|cpu, _params, _directparams| {
     cpu.stop();
     true
 };
@@ -288,8 +306,7 @@ mod test {
     }
 
     #[test]
-    #[should_panic]
     fn test_main_9() {
-        execute_normal("1,10,1,1,99");
+        assert_eq!(execute_normal("1,1,1,10,99"), "1,1,1,10,99,0,0,0,0,0,2");
     }
 }
