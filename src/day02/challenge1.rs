@@ -30,6 +30,27 @@ pub struct CPU<'c> {
 
 pub fn default_cb(_: &mut CPU, _: isize) {}
 
+impl<'c> Clone for CPU<'c> {
+    fn clone(&self) -> Self {
+        Self {
+            original_program: self.program.to_vec(),
+            program: self.program.to_vec(),
+            instructions: self.instructions.clone(),
+            stopped: self.stopped,
+            realstop: self.realstop,
+
+            input: vec![],
+            inpoffset: 0,
+
+            outputbuffer: vec![],
+            output_cb: self.output_cb,
+
+            pc: self.pc,
+            relative_base: self.relative_base,
+        }
+    }
+}
+
 impl<'c> CPU<'c> {
     pub fn new(program: Vec<isize>) -> Self {
         Self {
@@ -69,25 +90,6 @@ impl<'c> CPU<'c> {
         self.realstop = false;
         self.output_cb = &default_cb;
         self.relative_base = 0;
-    }
-
-    pub fn clone(&self) -> Self {
-        Self {
-            original_program: self.program.to_vec(),
-            program: self.program.to_vec(),
-            instructions: self.instructions.clone(),
-            stopped: self.stopped,
-            realstop: self.realstop,
-
-            input: vec![],
-            inpoffset: 0,
-
-            outputbuffer: vec![],
-            output_cb: self.output_cb,
-
-            pc: self.pc,
-            relative_base: self.relative_base,
-        }
     }
 
     pub fn get_output(&self) -> &Vec<isize> {

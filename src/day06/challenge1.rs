@@ -7,6 +7,12 @@ pub struct OrbitTree<'o> {
     nodes: HashMap<&'o str, Rc<RefCell<Tree<'o>>>>,
 }
 
+impl<'o> Default for OrbitTree<'o> {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl<'o> OrbitTree<'o> {
     pub fn new() -> Self {
         let root = Rc::new(RefCell::new(Tree::with_value("COM")));
