@@ -74,6 +74,7 @@ impl<'c> CPU<'c> {
 
     pub fn set_input(&mut self, inp: Vec<isize>) {
         self.input = inp;
+        self.inpoffset = 0;
     }
 
     pub fn add_to_input(&mut self, inp: isize) {
