@@ -117,7 +117,9 @@ pub fn main_func(input: &str, startwhite: bool) -> u64 {
         }
     }
 
-    print_board(&white_panels);
+    if startwhite {
+        print_board(&white_panels);
+    }
     painted_once.len() as u64
 }
 
@@ -131,5 +133,19 @@ mod test {
         let result = main_func(input, false);
         assert_eq!(result, 2319);
         println!("challenge 11.1: {}", result);
+    }
+
+    #[test]
+    fn test_main_1() {
+        let input = include_str!("inputvictor");
+        let result = main_func(input, false);
+        assert_eq!(result, 2093);
+    }
+
+    #[test]
+    fn test_main_2() {
+        let input = include_str!("inputnoah");
+        let result = main_func(input, false);
+        assert_eq!(result, 2173);
     }
 }
