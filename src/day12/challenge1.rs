@@ -1,3 +1,5 @@
+use std::cmp::Ordering;
+
 #[derive(Debug, Clone)]
 pub struct Moon {
     pub position: (i64, i64, i64),
@@ -15,29 +17,41 @@ impl Moon {
     }
 
     fn apply_gravity_one_moon(&mut self, moon: &mut Moon) {
-        if moon.position.0 < self.position.0 {
-            self.velocity.0 -= 1;
-            moon.velocity.0 += 1;
-        } else if moon.position.0 > self.position.0 {
-            self.velocity.0 += 1;
-            moon.velocity.0 -= 1;
-        }
+        match moon.position.0.cmp(&self.position.0) {
+            Ordering::Greater => {
+                self.velocity.0 += 1;
+                moon.velocity.0 -= 1;
+            }
+            Ordering::Less => {
+                self.velocity.0 -= 1;
+                moon.velocity.0 += 1;
+            }
+            _ => (),
+        };
 
-        if moon.position.1 < self.position.1 {
-            self.velocity.1 -= 1;
-            moon.velocity.1 += 1;
-        } else if moon.position.1 > self.position.1 {
-            self.velocity.1 += 1;
-            moon.velocity.1 -= 1;
-        }
+        match moon.position.1.cmp(&self.position.1) {
+            Ordering::Greater => {
+                self.velocity.1 += 1;
+                moon.velocity.1 -= 1;
+            }
+            Ordering::Less => {
+                self.velocity.1 -= 1;
+                moon.velocity.1 += 1;
+            }
+            _ => (),
+        };
 
-        if moon.position.2 < self.position.2 {
-            self.velocity.2 -= 1;
-            moon.velocity.2 += 1;
-        } else if moon.position.2 > self.position.2 {
-            self.velocity.2 += 1;
-            moon.velocity.2 -= 1;
-        }
+        match moon.position.2.cmp(&self.position.2) {
+            Ordering::Greater => {
+                self.velocity.2 += 1;
+                moon.velocity.2 -= 1;
+            }
+            Ordering::Less => {
+                self.velocity.2 -= 1;
+                moon.velocity.2 += 1;
+            }
+            _ => (),
+        };
     }
 
     pub fn update_position(&mut self) {

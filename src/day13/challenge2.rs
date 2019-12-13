@@ -12,9 +12,9 @@ fn print_board(board: &RefCell<[[char; 44]; 20]>, score: &RefCell<isize>) {
     for col in board.borrow().iter() {
         for value in col.iter() {
             print!("{}", value);
-            if value == &'⃝' {
-                print!(" ");
-            }
+            //            if value == &'⃝' {
+            //                print!(" ");
+            //            }
         }
         println!("\r")
     }
@@ -123,8 +123,8 @@ pub fn main_func(input: &str, printing: bool, manual: bool) -> u64 {
             match receiver.recv_timeout(Duration::from_millis(300)) {
                 Err(_) => 0,
                 Ok(c) => match c as char {
-                    'A' | 'a' => 1,
-                    'D' | 'd' => -1,
+                    'A' | 'a' => -1,
+                    'D' | 'd' => 1,
                     _ => 0,
                 },
             }
@@ -157,6 +157,15 @@ mod test {
     fn test_main_real() {
         let input = include_str!("input");
         let result = main_func(input, false, false);
+        assert_eq!(result, 16539);
+        println!("challenge 13.2: {}", result);
+    }
+
+    #[test]
+    #[ignore]
+    fn test_main_print() {
+        let input = include_str!("input");
+        let result = main_func(input, true, false);
         assert_eq!(result, 16539);
         println!("challenge 13.2: {}", result);
     }

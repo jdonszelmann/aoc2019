@@ -48,7 +48,7 @@ pub fn main_func(input: &str, startwhite: bool) -> u64 {
 
     let cbdir = direction.clone();
     let cbcol = color.clone();
-    let cbsecond = second.clone();
+    let cbsecond = second;
 
     let cb = |icpu: &mut CPU, value: isize| {
         let second = *cbsecond.borrow();
