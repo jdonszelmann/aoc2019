@@ -24,11 +24,19 @@ pub struct CPU<'c> {
     pub pc: usize,
 
     pub output_cb: &'c dyn Fn(&mut CPU, isize) -> (),
+    pub input_cb: &'c dyn Fn(&mut CPU, isize) -> isize,
 
     pub relative_base: isize,
 }
 
 pub fn default_cb(_: &mut CPU, _: isize) {}
+pub fn default_inp(_: &mut CPU, inp: isize) -> isize {
+    if inp == -1 {
+        panic!("No input provided");
+    } else {
+        inp
+    }
+}
 
 impl<'c> Clone for CPU<'c> {
     fn clone(&self) -> Self {
@@ -44,6 +52,7 @@ impl<'c> Clone for CPU<'c> {
 
             outputbuffer: vec![],
             output_cb: self.output_cb,
+            input_cb: self.input_cb,
 
             pc: self.pc,
             relative_base: self.relative_base,
@@ -65,6 +74,7 @@ impl<'c> CPU<'c> {
 
             outputbuffer: vec![],
             output_cb: &default_cb,
+            input_cb: &default_inp,
 
             pc: 0,
 
@@ -90,6 +100,7 @@ impl<'c> CPU<'c> {
         self.pc = 0;
         self.realstop = false;
         self.output_cb = &default_cb;
+        self.input_cb = &default_inp;
         self.relative_base = 0;
     }
 

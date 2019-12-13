@@ -21,7 +21,6 @@ fn print_board(board: &HashSet<(i64, i64)>) {
 
 pub fn get_cpu(program: &str) -> CPU {
     let mut cpu = CPU::from(program);
-    //    cpu.add_to_input(input);
 
     cpu.add_instruction(1, 4, ADD);
     cpu.add_instruction(2, 4, MUL);

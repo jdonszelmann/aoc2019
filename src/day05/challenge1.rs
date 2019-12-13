@@ -1,9 +1,13 @@
 use crate::day02::challenge1::{Instruction, ADD, CPU, MUL, STOP};
 
 pub const INP: &Instruction = &|cpu, _params, directparams| {
-    let value = cpu.input[cpu.inpoffset as usize];
-    cpu.inpoffset += 1;
-    cpu.program[directparams[0]] = value;
+    if cpu.inpoffset >= cpu.input.len() as isize {
+        cpu.program[directparams[0]] = (cpu.input_cb)(cpu, -1);
+    } else {
+        let value = cpu.input[cpu.inpoffset as usize];
+        cpu.inpoffset += 1;
+        cpu.program[directparams[0]] = (cpu.input_cb)(cpu, value);
+    }
     true
 };
 
