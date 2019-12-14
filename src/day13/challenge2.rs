@@ -97,7 +97,6 @@ pub fn main_func(input: &str, printing: bool, manual: bool) -> u64 {
                         }
                         4 => {
                             *ballx.borrow_mut() = *x.borrow();
-
                             '⃝'
                         }
                         _ => unreachable!(),
