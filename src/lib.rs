@@ -1,4 +1,5 @@
 #![allow(dead_code)]
+#![allow(clippy::implicit_hasher)]
 
 pub mod day01;
 pub mod day02;

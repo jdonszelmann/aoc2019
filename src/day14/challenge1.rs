@@ -22,7 +22,7 @@ impl Reaction {
 }
 
 pub fn parse_resource(string: &str) -> (String, i64) {
-    let sides: Vec<&str> = string.trim().split_terminator(" ").collect();
+    let sides: Vec<&str> = string.trim().split_terminator(' ').collect();
     let quantity: i64 = sides[0].parse().expect("Couldn't parse int");
     let name = sides[1].into();
 
@@ -74,12 +74,12 @@ fn main_func(input: &str) -> i64 {
 
         tree.entry(result.0.clone())
             .and_modify(|i: &mut Reaction| i.quantity = result.1)
-            .or_insert(Reaction::new(result.0.clone(), result.1));
+            .or_insert_with(|| Reaction::new(result.0.clone(), result.1));
 
-        for resource in sides[0].split_terminator(",") {
+        for resource in sides[0].split_terminator(',') {
             let resource = parse_resource(resource);
             tree.entry(result.0.clone())
-                .or_insert(Reaction::new(result.0.clone(), 1))
+                .or_insert_with(|| Reaction::new(result.0.clone(), 1))
                 .push(resource.0, resource.1);
         }
     }

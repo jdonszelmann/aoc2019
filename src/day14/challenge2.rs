@@ -54,12 +54,12 @@ fn main_func(input: &str, total_ore_amount: i64) -> u64 {
 
         tree.entry(result.0.clone())
             .and_modify(|i: &mut Reaction| i.quantity = result.1)
-            .or_insert(Reaction::new(result.0.clone(), result.1));
+            .or_insert_with(|| Reaction::new(result.0.clone(), result.1));
 
-        for resource in sides[0].split_terminator(",") {
+        for resource in sides[0].split_terminator(',') {
             let resource = parse_resource(resource);
             tree.entry(result.0.clone())
-                .or_insert(Reaction::new(result.0.clone(), 1))
+                .or_insert_with(|| Reaction::new(result.0.clone(), 1))
                 .push(resource.0, resource.1);
         }
     }
