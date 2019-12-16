@@ -72,10 +72,6 @@ fn main_func(input: &str) -> u64 {
             }
             i if i >= 1 && i <= 3 => {
                 if i == 2 && *firsttime.borrow() {
-                    //                    print_map(&walls, &x, &y, &had, &path);
-                    //                    println!("x = {}, y = {}", *x.borrow(), *y.borrow());
-                    //                    println!("path = {:?}", *path.borrow());
-
                     path.borrow_mut().clear();
                     queue.borrow_mut().clear();
                     had.borrow_mut().clear();
@@ -165,6 +161,7 @@ mod test {
     use crate::day15::challenge2::main_func;
 
     #[test]
+    #[ignore]
     fn test_main_real() {
         let input = include_str!("input");
         let result = main_func(input);

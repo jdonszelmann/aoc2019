@@ -176,6 +176,7 @@ mod test {
     use crate::day15::challenge1::main_func;
 
     #[test]
+    #[ignore]
     fn test_main_real() {
         let input = include_str!("input");
         let result = main_func(input);
