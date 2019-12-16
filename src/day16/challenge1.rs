@@ -1,4 +1,3 @@
-
 pub fn fft(numbers: &[i64], pattern: &[i64]) -> i64 {
     numbers
         .iter()

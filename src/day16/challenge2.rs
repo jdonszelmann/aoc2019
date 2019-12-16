@@ -1,4 +1,3 @@
-
 fn main_func(input: &str, cycles: i64) -> String {
     let mut numbers: Vec<i64> = input
         .chars()
