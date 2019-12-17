@@ -90,6 +90,9 @@ impl<'c> CPU<'c> {
     pub fn add_to_input(&mut self, inp: isize) {
         self.input.push(inp);
     }
+    pub fn extend_to_input(&mut self, inp: Vec<isize>) {
+        self.input.extend(inp.iter());
+    }
 
     pub fn reset(&mut self) {
         self.program = self.original_program.to_vec();
