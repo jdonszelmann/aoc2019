@@ -1,28 +1,26 @@
 use crate::day02::challenge1::CPU;
 use crate::day11::challenge1::get_cpu;
-use std::cell::{RefCell};
+use std::cell::RefCell;
 
 fn find_intersections(values: Vec<Vec<char>>) -> u64 {
     let mut sum = 0;
 
     for (y, column) in values.iter().enumerate() {
         for (x, value) in column.iter().enumerate() {
-            let above = if y > 0 {
-                values.get(y-1)
-            } else {
-                None
-            };
-            let below = values.get(y+1);
-            let right = column.get(x+1);
-            let left = if x > 0 {
-                column.get(x-1)
-            } else {
-                None
-            };
+            let above = if y > 0 { values.get(y - 1) } else { None };
+            let below = values.get(y + 1);
+            let right = column.get(x + 1);
+            let left = if x > 0 { column.get(x - 1) } else { None };
 
-            if let (Some(above), Some(below), Some(right), Some(left)) = (above,below,right, left) {
-                if value == &'#' && above.get(x) == Some(&'#') && below.get(x) == Some(&'#') && right == &'#' && left == &'#' {
-                    print!("{}", 'O');
+            if let (Some(above), Some(below), Some(right), Some(left)) = (above, below, right, left)
+            {
+                if value == &'#'
+                    && above.get(x) == Some(&'#')
+                    && below.get(x) == Some(&'#')
+                    && right == &'#'
+                    && left == &'#'
+                {
+                    print!("O");
                     sum += (x * y) as u64;
                 } else {
                     print!("{}", value);
@@ -61,7 +59,6 @@ fn main_func(input: &str) -> u64 {
 
     cpu.output_cb = &cb;
     cpu.run();
-
 
     find_intersections(res.into_inner())
 }

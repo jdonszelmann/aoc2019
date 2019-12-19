@@ -5,7 +5,6 @@ fn main_func(input: &str, area: usize) -> u64 {
 
     let mut output = vec![];
     for i in 0..area {
-
         for j in 0..area {
             cpu.add_to_input(i as isize);
             cpu.add_to_input(j as isize);
@@ -17,7 +16,6 @@ fn main_func(input: &str, area: usize) -> u64 {
             cpu.reset()
         }
     }
-
 
     output.iter().sum::<isize>() as u64
 }
@@ -33,5 +31,4 @@ mod test {
         assert_eq!(result, 229);
         println!("challenge 19.1: {}", result);
     }
-
 }
