@@ -1,6 +1,13 @@
 use std::collections::{VecDeque, HashSet, HashMap};
-use crate::day18::challenge1::Feature::{Door, Key};
+use crate::day18::challenge2::Feature::{Door, Key};
 use std::fmt::{Display, Formatter};
+use std::thread::Thread;
+use atomic_counter::{AtomicCounter, RelaxedCounter};
+use std::thread;
+use std::sync::Arc;
+use std::sync::atomic::{AtomicUsize, Ordering};
+use std::time::Duration;
+use crossbeam::sync::TreiberStack;
 
 #[derive(Debug, Clone)]
 struct Maze {
@@ -183,43 +190,64 @@ fn one_cycle(mut smallest: u64, current_maze: Maze) -> (u64, Vec<Maze>){
 }
 
 fn main_func(input: &str) -> u64 {
-
     let mut maze = Maze::new(input);
 
     let mut total = 0;
 
     println!("{}", maze);
 
-    let mut possibilities = Vec::new();
-    possibilities.push(maze);
+//    let (s, r) = unbounded();
+//    s.send(maze);
 
-    let mut tried = 0;
+    let items = Arc::new(TreiberStack::new());
+    items.push(maze);
 
-    let mut smallest = 4000;
+    let mut tried = Arc::new(RelaxedCounter::new(0));
 
-    while let Some(current_maze) = possibilities.pop() {
-        tried+=1;
-        if tried % 10000 == 0 {
-            println!("iteration {} with length {}", tried, smallest);
-        }
+    let mut smallest = Arc::new(AtomicUsize::new(4000));
 
-        let (newsmallest, newmazes) = one_cycle(smallest, current_maze);
+    let mut threads = vec![];
+    for i in 0..13 {
+        let titems = items.clone();
+        let counter = tried.clone();
+        let local_smallest = smallest.clone();
+        threads.push(thread::spawn(move || {
+            while let Some(current_maze) = titems.pop() {
 
-        if newsmallest < smallest {
-            smallest = newsmallest;
-        }
-        possibilities.extend(newmazes.into_iter());
+                let local_local_smallest =  local_smallest.load(Ordering::SeqCst) as u64;
+
+                let c = counter.inc();
+                if c % 10000 == 0 {
+                    println!("iteration {} with length {:?}", c, local_local_smallest);
+                }
+
+
+                let (newsmallest, newmazes) = one_cycle(local_local_smallest, current_maze);
+
+                if newsmallest < local_local_smallest {
+                    local_smallest.store(newsmallest as usize, Ordering::SeqCst);
+                    println!("smallest: {}", newsmallest);
+                }
+
+                for i in newmazes.into_iter() {
+                    titems.push(i);
+                }
+            }
+        }));
     }
 
-    smallest
+    for i in threads {
+        i.join();
+    }
+
+    smallest.load(Ordering::SeqCst) as u64
 }
 
 #[cfg(test)]
 mod test {
-    use crate::day18::challenge1::main_func;
+    use crate::day18::challenge2::main_func;
 
     #[test]
-    #[ignore]
     fn test_main_real() {
         let input = include_str!("input");
         let result = main_func(input);
@@ -227,55 +255,5 @@ mod test {
         println!("challenge 18.1: {}", result);
     }
 
-    #[test]
-    fn test_main_1() {
-        assert_eq!(main_func("#########
-#b.A.@.a#
-#########"), 8);
-    }
 
-    #[test]
-    fn test_main_2() {
-        assert_eq!(main_func("########################
-#f.D.E.e.C.b.A.@.a.B.c.#
-######################.#
-#d.....................#
-########################"), 86);
-    }
-
-    #[test]
-    fn test_main_3() {
-        assert_eq!(main_func("########################
-#...............b.C.D.f#
-#.######################
-#.....@.a.B.c.d.A.e.F.g#
-########################
-"), 132);
-    }
-
-    #[test]
-    #[ignore]
-    fn test_main_4() {
-        assert_eq!(main_func("#################
-#i.G..c...e..H.p#
-########.########
-#j.A..b...f..D.o#
-########@########
-#k.E..a...g..B.n#
-########.########
-#l.F..d...h..C.m#
-#################
-"), 136);
-    }
-
-    #[test]
-    fn test_main_5() {
-        assert_eq!(main_func("########################
-#@..............ac.GI.b#
-###d#e#f################
-###A#B#C################
-###g#h#i################
-########################
-"), 81);
-    }
 }

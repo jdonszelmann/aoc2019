@@ -1,5 +1,25 @@
-fn main_func(_input: &str) -> u64 {
-    0
+use crate::day11::challenge1::get_cpu;
+
+fn main_func(input: &str, area: usize) -> u64 {
+    let mut cpu = get_cpu(input);
+
+    let mut output = vec![];
+    for i in 0..area {
+
+        for j in 0..area {
+            cpu.add_to_input(i as isize);
+            cpu.add_to_input(j as isize);
+            cpu.run();
+
+            let op = cpu.get_output()[0];
+            output.push(op);
+
+            cpu.reset()
+        }
+    }
+
+
+    output.iter().sum::<isize>() as u64
 }
 
 #[cfg(test)]
@@ -9,18 +29,9 @@ mod test {
     #[test]
     fn test_main_real() {
         let input = include_str!("input");
-        let result = main_func(input);
-        //        assert_eq!(result, value);
+        let result = main_func(input, 50);
+        assert_eq!(result, 229);
         println!("challenge 19.1: {}", result);
     }
 
-    #[test]
-    fn test_main_1() {
-        assert_eq!(main_func(""), 0);
-    }
-
-    #[test]
-    fn test_main_2() {
-        assert_eq!(main_func(""), 0);
-    }
 }
